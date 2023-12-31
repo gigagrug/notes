@@ -1,0 +1,2 @@
+[build]
+exclude_dir = ["node_modules","prisma\\migrations", ".git"]

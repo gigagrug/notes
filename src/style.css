@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .c-text {
+    @apply text-gray-800 dark:text-gray-200;
+  }
+}
+
+@layer base {
+  h1 {
+    @apply text-4xl font-bold c-text;
+  }
+  h2 {
+    @apply text-3xl font-bold c-text;
+  }
+  h3 {
+    @apply text-2xl c-text;
+  }
+  p {
+    @apply c-text;
+  }
+  label {
+    @apply mb-1 text-sm font-medium c-text;
+  }
+  input[type="text"] {
+    @apply c-text border rounded-lg w-full p-2 dark:bg-gray-700/40;
+  }
+}
