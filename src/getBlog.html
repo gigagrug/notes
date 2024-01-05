@@ -1,14 +1,18 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title></title>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="./style.css" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/build.css" />
+    <title>Blog</title>
   </head>
   <body>
-    <div id="blogsContainer" class="m-5"></div>
+    <div class="mt-5 w-11/12 md:w-1/2 mx-auto">
+      <div id="blogsContainer"></div>
+    </div>
 
+    <script type="module" src="/assets/darkMode.js"></script>
     <script>
       async function fetchBlogData() {
         try {
@@ -29,15 +33,17 @@
           return null
         }
       }
+
       fetchBlogData().then((blogsData) => {
-        if (blogsData && blogsContainer) {
+        const blogContainer = document.getElementById("blogsContainer") // Assuming "blogsContainer" is the ID of your container
+        if (blogsData && blogContainer) {
           const { id, title, article } = blogsData
-          blogsContainer.innerHTML = `
-						<div>
-						<h1>${title}</h1>
-						<p>${article}</p>
-						</div>
-					`
+          blogContainer.innerHTML = `
+      			<div>
+        			<h1 class="text-center">${title}</h1>
+        			<p>${article}</p>
+      			</div>
+    			`
         } else {
           console.log("Failed to fetch or render blog data.")
         }

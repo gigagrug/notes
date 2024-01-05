@@ -6,14 +6,23 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+func env() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 var DB *sql.DB
 
 func openDB() error {
-	db, err := sql.Open("sqlite3", "./prisma/dev.db")
+	db, err := sql.Open("sqlite3", os.Getenv("PRISMA_DB"))
 	if err != nil {
 		return err
 	}
@@ -25,18 +34,23 @@ func closeDB() error {
 	return DB.Close()
 }
 
+const path = "./src"
+
 func main() {
+	env()
 	openDB()
 	defer closeDB()
 
 	mux := http.NewServeMux()
-	mux.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./src/"))))
+	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(path+"/assets/"))))
 
-	mux.HandleFunc("/home", Home)
+	mux.HandleFunc("/", Home)
 	mux.HandleFunc("/blog/", BlogId)
 
-	mux.HandleFunc("/", GetBlogs)
+	mux.HandleFunc("/getBlogs/", GetBlogs)
 	mux.HandleFunc("/getBlog/", GetBlog)
+	mux.HandleFunc("/createBlog/", createBlog)
+	mux.HandleFunc("/deleteBlog/", deleteBlog)
 
 	err := http.ListenAndServe(":8000", addCORS(mux))
 	if err != nil {
@@ -53,15 +67,13 @@ func addCORS(h http.Handler) http.Handler {
 	})
 }
 
-const path = "./src"
-
 func Home(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles(path + "/main.html"))
+	tmpl := template.Must(template.ParseFiles(path + "/index.html"))
 
 	if err := tmpl.Execute(w, nil); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
@@ -113,14 +125,12 @@ func GetBlogs(w http.ResponseWriter, r *http.Request) {
 		blogs = append(blogs, blog)
 	}
 
-	// Convert the blogs slice to JSON
 	jsonData, err := json.Marshal(blogs)
 	if err != nil {
 		http.Error(w, "Unable to marshal JSON", http.StatusInternalServerError)
 		return
 	}
 
-	// Set content type and send JSON response
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(jsonData)
 }
@@ -141,14 +151,45 @@ func GetBlog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert the blog object to JSON
 	jsonData, err := json.Marshal(blog)
 	if err != nil {
 		http.Error(w, "Unable to marshal JSON", http.StatusInternalServerError)
 		return
 	}
 
-	// Set content type and send JSON response
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(jsonData)
+}
+
+func createBlog(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var blog Blog
+	json.NewDecoder(r.Body).Decode(&blog)
+
+	err := DB.QueryRow(`INSERT INTO "Blog" (title, article) VALUES ($1, $2) RETURNING id`, blog.Title, blog.Article).Scan(&blog.Id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.NewEncoder(w).Encode(blog)
+}
+
+func deleteBlog(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	id := r.URL.Path[len("/deleteBlog/"):]
+
+	_, err := DB.Exec(`DELETE FROM "Blog" WHERE id = $1`, id)
+	if err != nil {
+		http.Error(w, "Error deleting todo", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

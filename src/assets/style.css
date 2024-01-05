@@ -6,6 +6,9 @@
   .c-text {
     @apply text-gray-800 dark:text-gray-200;
   }
+  .c-border {
+    @apply border border-gray-300 dark:border-gray-600;
+  }
 }
 
 @layer base {
@@ -16,7 +19,7 @@
     @apply text-3xl font-bold c-text;
   }
   h3 {
-    @apply text-2xl c-text;
+    @apply text-2xl font-bold c-text;
   }
   p {
     @apply c-text;
@@ -24,7 +27,8 @@
   label {
     @apply mb-1 text-sm font-medium c-text;
   }
+  textarea,
   input[type="text"] {
-    @apply c-text border rounded-lg w-full p-2 dark:bg-gray-700/40;
+    @apply c-text c-border focus:outline-black rounded-lg w-full p-2 dark:bg-gray-700/40;
   }
 }
