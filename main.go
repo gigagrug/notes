@@ -8,21 +8,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
-
-func env() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
 
 var DB *sql.DB
 
 func openDB() error {
-	db, err := sql.Open("sqlite3", os.Getenv("PRISMA_DB"))
+	db, err := sql.Open("postgres", os.Getenv("PRISMA_DB"))
 	if err != nil {
 		return err
 	}
@@ -37,7 +29,6 @@ func closeDB() error {
 const path = "./src"
 
 func main() {
-	env()
 	openDB()
 	defer closeDB()
 
@@ -187,7 +178,7 @@ func deleteBlog(w http.ResponseWriter, r *http.Request) {
 
 	_, err := DB.Exec(`DELETE FROM "Blog" WHERE id = $1`, id)
 	if err != nil {
-		http.Error(w, "Error deleting todo", http.StatusInternalServerError)
+		http.Error(w, "Error deleting blog", http.StatusInternalServerError)
 		return
 	}
 

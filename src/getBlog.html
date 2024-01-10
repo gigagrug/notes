@@ -9,7 +9,7 @@
   </head>
   <body>
     <div class="mt-5 w-11/12 md:w-1/2 mx-auto">
-      <div id="blogsContainer"></div>
+      <div id="blogContainer"></div>
     </div>
 
     <script type="module" src="/assets/darkMode.js"></script>
@@ -17,9 +17,8 @@
       async function fetchBlogData() {
         try {
           console.log(window.location.pathname)
-          const currentPath = window.location.pathname
-          const parts = currentPath.split("/")
-          const postId = parts[parts.length - 1]
+          const currentPath = window.location.pathname.split("/")
+          const postId = currentPath[currentPath.length - 1]
           console.log(postId)
           const response = await fetch(`http://localhost:8000/getBlog/${postId}`)
           if (!response.ok) {
@@ -35,7 +34,7 @@
       }
 
       fetchBlogData().then((blogsData) => {
-        const blogContainer = document.getElementById("blogsContainer") // Assuming "blogsContainer" is the ID of your container
+        const blogContainer = document.getElementById("blogContainer")
         if (blogsData && blogContainer) {
           const { id, title, article } = blogsData
           blogContainer.innerHTML = `

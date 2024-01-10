@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      PRISMA_DB: "postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - path: .
+          target: /app
+          action: sync
+  db:
+    container_name: postgres 
+    image: postgres:16.1-alpine3.19
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

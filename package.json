@@ -7,20 +7,18 @@
     "dev": "vite",
     "tw": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/build.css --minify --watch",
     "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.7.1"
+    "preview": "vite preview",
+    "migrate": "npx prisma migrate dev --skip-generate"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
+    "postcss": "^8.4.33",
     "prettier": "^3.1.1",
-    "prisma": "^5.7.1",
-    "tailwindcss": "^3.4.0",
+    "prisma": "^5.8.0",
+    "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
   },
   "prettier": {
     "semi": false,
