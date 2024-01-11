@@ -64,6 +64,11 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	tmpl := template.Must(template.ParseFiles(path + "/index.html"))
 
 	if err := tmpl.Execute(w, nil); err != nil {
