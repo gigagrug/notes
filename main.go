@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 )
 
 var DB *sql.DB
+var path string
 
 func openDB() error {
 	db, err := sql.Open("postgres", os.Getenv("PRISMA_DB"))
@@ -26,9 +28,15 @@ func closeDB() error {
 	return DB.Close()
 }
 
-const path = "./src"
-
 func main() {
+	if os.Getenv("PROD") != "true" {
+		fmt.Println("dev")
+		path = "./src"
+	} else {
+		fmt.Println("prod")
+		path = "./dist"
+	}
+
 	openDB()
 	defer closeDB()
 

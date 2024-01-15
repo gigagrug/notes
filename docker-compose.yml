@@ -8,6 +8,7 @@ services:
       - 8000:8000
     environment:
       PRISMA_DB: "postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+      PROD: false 
     depends_on:
       db:
         condition: service_healthy
