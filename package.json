@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "tw": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/build.css --minify --watch",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "migrate": "npx prisma migrate dev --skip-generate"
   },
