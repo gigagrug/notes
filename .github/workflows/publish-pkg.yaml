@@ -1,34 +1,21 @@
 name: Docker Image CI for GHCR
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        type: string
-        description: Version
-        required: true
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Build and push the image
+        uses: actions/checkout@v3
         run: |
           docker login --username develang --password ${{ secrets.GHP_BLOG }} ghcr.io
           docker build . --tag ghcr.io/develang/blog:latest
           docker push ghcr.io/develang/blog:latest
-          docker build . --tag ghcr.io/develang/blog:${{ inputs.version }}
-          docker push ghcr.io/develang/blog:${{ inputs.version }}
-   
-      - name: Create GitHub release
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v
-          release_name: Release v
-          body: Release notes for v
-          draft: false
-          prerelease: false
+          docker build . --tag ghcr.io/develang/blog:0.4.0
+          docker push ghcr.io/develang/blog:0.4.0
+      - name: Release
+        uses: softprops/action-gh-release@v1
