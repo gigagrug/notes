@@ -1,7 +1,12 @@
 name: Docker Image CI for GHCR
 
-on: 
-  push
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Version
+        required: true
 
 jobs:
   build_and_publish:
@@ -10,10 +15,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build and push the image
         run: |
-          docker login --username develang --password ${{ secrets.GHP_BLOG}} ghcr.io
+          docker login --username develang --password ${{ secrets.GHP_BLOG }} ghcr.io
           docker build . --tag ghcr.io/develang/blog:latest
           docker push ghcr.io/develang/blog:latest
-          docker build . --tag ghcr.io/develang/blog:0.2.0
-          docker push ghcr.io/develang/blog:0.2.0
+          docker build . --tag ghcr.io/develang/blog:${{ inputs.version }}
+          docker push ghcr.io/develang/blog:${{ inputs.version }}
 
 
