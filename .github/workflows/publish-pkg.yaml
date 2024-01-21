@@ -3,6 +3,9 @@ name: Create release
 on:
   push
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Create Release
