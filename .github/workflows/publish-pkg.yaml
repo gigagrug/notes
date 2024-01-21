@@ -22,6 +22,7 @@ jobs:
           docker push ghcr.io/develang/blog:${{ inputs.version }}
    
       - name: Create GitHub release
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
