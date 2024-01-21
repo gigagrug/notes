@@ -18,12 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        run: |
-          docker login --username develang --password ${{ secrets.GHP_BLOG }} ghcr.io
-          docker build . --tag ghcr.io/develang/blog:latest
-          docker push ghcr.io/develang/blog:latest
-          docker build . --tag ghcr.io/develang/blog:${{ inputs.version }}
-          docker push ghcr.io/develang/blog:${{ inputs.version }}
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
