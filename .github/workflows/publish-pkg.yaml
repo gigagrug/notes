@@ -1,30 +1,24 @@
-name: Docker Image CI for GHCR
+name: Create release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        type: string
-        description: Version
-        required: true
+  push
+
+permissions:
+  contents: write
 
 jobs:
   build:
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - name: Build and push the image
+      - name: Checkout code
         uses: actions/checkout@v3
-        # run: |
-        #   docker login --username develang --password ${{ secrets.GHP_BLOG }} ghcr.io
-        #   docker build . --tag ghcr.io/develang/blog:latest
-        #   docker push ghcr.io/develang/blog:latest
-        #   docker build . --tag ghcr.io/develang/blog:0.4.0
-        #   docker push ghcr.io/develang/blog:0.4.0
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.0.0  # Replace with your desired version
-          name: Release v1.0.0  # Replace with your desired title
-          body: Release notes for v1.0.0  # Replace with your release notes
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: ${{ github.run_number }}
+
