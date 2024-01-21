@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
