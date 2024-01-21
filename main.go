@@ -34,7 +34,7 @@ func main() {
 		path = "./src"
 	} else {
 		fmt.Println("prod")
-		path = "./dist"
+		path = "./bin/dist"
 	}
 
 	openDB()

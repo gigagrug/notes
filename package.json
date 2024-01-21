@@ -1,13 +1,13 @@
 {
   "name": "blog",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "tw": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/build.css --minify --watch",
     "build": "vite build",
     "preview": "vite preview",
+    "tw": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/build.css --minify --watch",
     "migrate": "npx prisma migrate dev --skip-generate"
   },
   "devDependencies": {
