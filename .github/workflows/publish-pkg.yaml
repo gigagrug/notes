@@ -21,13 +21,13 @@ jobs:
           docker build . --tag ghcr.io/develang/blog:${{ inputs.version }}
           docker push ghcr.io/develang/blog:${{ inputs.version }}
    
-      - uses: softprops/action-gh-release@v1
       - name: Create GitHub release
-        with:
-          tag_name: v${{ inputs.version }}
-          title: Release v${{ inputs.version }}
-          body: Release notes for v${{ inputs.version }}
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
+        with:
+          tag_name: v${{ inputs.version }}
+          release_name: Release v${{ inputs.version }}
+          body: Release notes for v${{ inputs.version }}
+          draft: false
+          prerelease: false
