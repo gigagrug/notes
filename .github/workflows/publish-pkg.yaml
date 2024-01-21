@@ -12,8 +12,8 @@ jobs:
         run: |
           docker login --username develang --password ${{ secrets.GHP_BLOG}} ghcr.io
           docker build . --tag ghcr.io/develang/blog:latest
-          docker build . --tag ghcr.io/dev:0.1.0
           docker push ghcr.io/develang/blog:latest
+          docker build . --tag ghcr.io/dev:0.1.0
           docker push ghcr.io/develang/blog:0.1.0
 
 
