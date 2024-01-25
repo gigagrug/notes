@@ -13,8 +13,7 @@ RUN go mod download -x
 ARG TARGETARCH
 RUN CGO_ENABLED=0 GOARCH=$TARGETARCH go build -o /bin/server .
 RUN apk add --no-cache nodejs npm
-RUN npm i
-RUN npm run build
+RUN cd frontend/ && npm i && npm run build
 
 FROM alpine:3.19 AS final
 RUN --mount=type=cache,target=/var/cache/apk \
@@ -34,7 +33,7 @@ RUN adduser \
     appuser
 USER appuser
 COPY --from=build /bin/server /bin/
-COPY --from=build /src/dist/ /bin/dist/
+COPY --from=build /src/frontend/dist/ /bin/dist/
 EXPOSE 8000
 ENV PROD=true
 ENTRYPOINT [ "/bin/server" ]
