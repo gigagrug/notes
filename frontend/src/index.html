@@ -35,6 +35,7 @@
         fetch("http://localhost:8000/getBlogs/")
           .then((response) => response.json())
           .then((data) => {
+            console.log(data)
             const blogsContainer = document.getElementById("blogsContainer")
             if (data && blogsContainer) {
               blogsContainer.innerHTML = data
@@ -51,7 +52,6 @@
                 )
                 .join("")
             }
-            console.log(data)
           })
           .catch((error) => {
             console.error("Error:", error)

@@ -31,7 +31,7 @@ func closeDB() error {
 func main() {
 	if os.Getenv("PROD") != "true" {
 		fmt.Println("dev")
-		path = "./src"
+		path = "./frontend/src"
 	} else {
 		fmt.Println("prod")
 		path = "./bin/dist"
