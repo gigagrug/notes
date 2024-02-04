@@ -56,6 +56,7 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
 func addCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -91,7 +92,7 @@ func BlogId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles(path + "/getBlog.html"))
+	tmpl := template.Must(template.ParseFiles(path + "/blog.html"))
 
 	if err := tmpl.Execute(w, nil); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
@@ -111,7 +112,7 @@ func GetBlogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := DB.Query(`SELECT * FROM "Blog"`)
+	rows, err := DB.Query(`SELECT * FROM "Blog" ORDER BY id ASC`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -145,7 +146,7 @@ func GetBlog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := r.URL.Path[len("/getBlog/"):]
+	id := r.URL.Query().Get("postId")
 	row := DB.QueryRow(`SELECT * FROM "Blog" WHERE id=$1`, id)
 
 	var blog Blog
@@ -182,8 +183,6 @@ func createBlog(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	json.NewEncoder(w).Encode(blog)
 }
 
 func deleteBlog(w http.ResponseWriter, r *http.Request) {

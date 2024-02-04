@@ -14,5 +14,8 @@ export default defineConfig({
         blog: resolve(root, "getBlog.html")
       }
     }
+  },
+  server: {
+    host: true
   }
 })

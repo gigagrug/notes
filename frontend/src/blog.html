@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/build.css" />
+    <link rel="stylesheet" href="/assets/style.css" />
     <title>Blog</title>
   </head>
   <body>
@@ -14,13 +14,17 @@
 
     <script type="module" src="/assets/darkMode.js"></script>
     <script>
+      function getUrlParameter(name) {
+        const regex = new RegExp("[?]" + name + "=([^&#]*)")
+        const results = regex.exec(window.location.search)
+        return results ? decodeURIComponent(results[1].replace(/\+/g, " ")) : ""
+      }
+
       async function fetchBlogData() {
         try {
-          console.log(window.location.pathname)
-          const currentPath = window.location.pathname.split("/")
-          const postId = currentPath[currentPath.length - 1]
-          console.log(postId)
-          const response = await fetch(`http://localhost:8000/getBlog/${postId}`)
+          var postId = getUrlParameter("postId")
+          console.log(location.search)
+          const response = await fetch(`http://localhost:8000/getBlog?postId=${postId}`)
           if (!response.ok) {
             throw new Error("Unable to fetch data")
           }
