@@ -91,7 +91,7 @@
 
       async function deleteBlog(blogId) {
         try {
-          const response = await fetch(url + `/deleteBlog/${blogId}`, {
+          const response = await fetch(url + `/deleteBlog/${blogId}/`, {
             method: "DELETE"
           })
           if (response.ok) {

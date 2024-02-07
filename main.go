@@ -43,13 +43,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(path+"/assets/"))))
 
-	mux.HandleFunc("/", Home)
-	mux.HandleFunc("/blog/", BlogId)
+	mux.HandleFunc("GET /{$}", Home)
+	mux.HandleFunc("GET /blog/{$}", BlogId)
 
-	mux.HandleFunc("/getBlogs/", GetBlogs)
-	mux.HandleFunc("/getBlog/", GetBlog)
-	mux.HandleFunc("/createBlog/", createBlog)
-	mux.HandleFunc("/deleteBlog/", deleteBlog)
+	mux.HandleFunc("GET /getBlogs/{$}", GetBlogs)
+	mux.HandleFunc("GET /getBlog/{$}", GetBlog)
+	mux.HandleFunc("POST /createBlog/{$}", createBlog)
+	mux.HandleFunc("DELETE /deleteBlog/{blogId}/{$}", deleteBlog)
 
 	err := http.ListenAndServe(":8000", addCORS(mux))
 	if err != nil {
@@ -62,22 +62,14 @@ func addCORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+		if r.Method == "OPTIONS" {
+			return
+		}
 		h.ServeHTTP(w, r)
 	})
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
 	tmpl := template.Must(template.ParseFiles(path + "/index.html"))
 
 	if err := tmpl.Execute(w, nil); err != nil {
@@ -87,11 +79,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func BlogId(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	tmpl := template.Must(template.ParseFiles(path + "/blog.html"))
 
 	if err := tmpl.Execute(w, nil); err != nil {
@@ -107,11 +94,6 @@ type Blog struct {
 }
 
 func GetBlogs(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	rows, err := DB.Query(`SELECT * FROM "Blog" ORDER BY id ASC`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -141,11 +123,6 @@ func GetBlogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetBlog(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	id := r.URL.Query().Get("postId")
 	row := DB.QueryRow(`SELECT * FROM "Blog" WHERE id=$1`, id)
 
@@ -167,15 +144,6 @@ func GetBlog(w http.ResponseWriter, r *http.Request) {
 }
 
 func createBlog(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-	}
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	var blog Blog
 	json.NewDecoder(r.Body).Decode(&blog)
 
@@ -186,15 +154,7 @@ func createBlog(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBlog(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-	}
-
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	id := r.URL.Path[len("/deleteBlog/"):]
+	id := r.PathValue("blogId")
 
 	_, err := DB.Exec(`DELETE FROM "Blog" WHERE id = $1`, id)
 	if err != nil {
